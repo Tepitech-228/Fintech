@@ -1,0 +1,98 @@
+<div class="page">
+  <div class="flex items-center justify-between">
+    <div><h1 class="page-title">Bilan Mensuel</h1><p class="page-subtitle">{{getMonthLabel()}}</p></div>
+    <div class="flex gap-2 items-center">
+      <input type="month" [ngModel]="year+'-'+month" (ngModelChange)="year=$event.split('-')[0]; month=$event.split('-')[1]; load()" style="width:auto">
+    </div>
+  </div>
+
+  @if (!data) {
+    <div class="empty-state card"><p>Chargement...</p></div>
+  } @else {
+    <div class="bilan-stats">
+      <div class="bilan-card income">
+        <div class="bilan-card-icon">📈</div>
+        <div class="bilan-card-label">Revenus</div>
+        <div class="bilan-card-value">{{format(data.income)}}</div>
+      </div>
+      <div class="bilan-card expense">
+        <div class="bilan-card-icon">💳</div>
+        <div class="bilan-card-label">Dépenses</div>
+        <div class="bilan-card-value">{{format(data.expense)}}</div>
+      </div>
+      <div class="bilan-card invest">
+        <div class="bilan-card-icon">📊</div>
+        <div class="bilan-card-label">Investissements</div>
+        <div class="bilan-card-value">{{format(data.investment)}}</div>
+      </div>
+      <div class="bilan-card debt">
+        <div class="bilan-card-icon">🏦</div>
+        <div class="bilan-card-label">Remb. Dette</div>
+        <div class="bilan-card-value">{{format(data.debt)}}</div>
+      </div>
+      <div class="bilan-card net">
+        <div class="bilan-card-icon">💰</div>
+        <div class="bilan-card-label">Balance Nette</div>
+        <div class="bilan-card-value" [style.color]="data.netBalance >= 0 ? 'var(--success)' : 'var(--tertiary)'">{{format(data.netBalance)}}</div>
+      </div>
+      <div class="bilan-card saving-rate">
+        <div class="bilan-card-icon">🐷</div>
+        <div class="bilan-card-label">Taux d'Épargne</div>
+        <div class="bilan-card-value" [style.color]="getSavingsColor(data.savingsRate)">{{data.savingsRate}}%</div>
+      </div>
+    </div>
+
+    <div class="bilan-grid">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Patrimoine Net</div></div>
+        <div class="bilan-big-value">{{format(data.netWorth)}}</div>
+        <div class="bilan-sub">
+          <span>Actifs: {{format(data.totalAssets)}}</span>
+          <span style="color:var(--tertiary)">Dettes: -{{format(data.totalDebt)}}</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">Objectifs d'Épargne</div></div>
+        @for (g of data.goals; track g.name) {
+          <div class="bilan-goal">
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-semibold">{{g.name}}</span>
+              <span class="text-sm text-muted">{{format(g.current)}} / {{format(g.target)}}</span>
+            </div>
+            <div class="progress-bar mt-2"><div class="progress-fill" [style.width.%]="g.progress" [style.background]="g.progress >= 100 ? 'var(--success)' : 'var(--accent)'"></div></div>
+          </div>
+        }
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">Budgets</div></div>
+        @if (data.totalBudget > 0) {
+          <div class="bilan-budget-summary">
+            <span>Total budgété: {{format(data.totalBudget)}}</span>
+            <span>Dépensé: {{format(data.totalBudgetSpent)}}</span>
+            <div class="progress-bar mt-2"><div class="progress-fill" [style.width.%]="(data.totalBudgetSpent/data.totalBudget)*100" [style.background]="data.totalBudgetSpent > data.totalBudget ? 'var(--tertiary)' : 'var(--success)'"></div></div>
+          </div>
+        } @else { <div class="empty-state" style="padding:1rem 0"><p>Aucun budget ce mois</p></div> }
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">Top Catégories de Dépenses</div></div>
+        @for (c of data.topCategories; track c.name) {
+          <div class="bilan-top-cat">
+            <div class="flex items-center gap-2">
+              <span class="pf-dot" [style.background]="c.color" style="width:0.5rem;height:0.5rem;border-radius:50%"></span>
+              <span class="text-sm">{{c.name}}</span>
+              <span class="text-sm font-semibold" style="margin-left:auto">{{format(c.total)}}</span>
+            </div>
+          </div>
+        }
+        @if (data.topCategories.length === 0) { <div class="empty-state" style="padding:1rem 0"><p>Aucune dépense ce mois</p></div> }
+      </div>
+    </div>
+
+    <div class="bilan-footer">
+      <div class="text-sm text-muted">{{data.transactionCount}} transactions enregistrées ce mois</div>
+    </div>
+  }
+</div>

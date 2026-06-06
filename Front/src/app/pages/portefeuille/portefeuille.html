@@ -1,0 +1,108 @@
+<div class="pf-header">
+  <div><h1>Portefeuille</h1><p>Vue d'ensemble du patrimoine</p></div>
+</div>
+
+@if (loading) {
+  <div class="pf-stats">
+    <div class="pf-stat loading-pulse" style="height:6rem"></div>
+    <div class="pf-stat loading-pulse" style="height:6rem"></div>
+    <div class="pf-stat loading-pulse" style="height:6rem"></div>
+  </div>
+  <div class="pf-charts-2">
+    <div class="pf-chart-card loading-pulse" style="height:18rem"></div>
+    <div class="pf-chart-card loading-pulse" style="height:18rem"></div>
+  </div>
+} @else {
+
+<div class="pf-stats">
+  <div class="pf-stat">
+    <div class="pf-stat-top"><span class="pf-stat-label">Dépenses / Jour</span><span class="pf-stat-icon">💳</span></div>
+    <div class="pf-stat-value">{{formatFCFA(dailyExpense)}}</div>
+  </div>
+  <div class="pf-stat">
+    <div class="pf-stat-top"><span class="pf-stat-label">Dépenses / Mois</span><span class="pf-stat-icon">📅</span></div>
+    <div class="pf-stat-value">{{formatFCFA(monthlyExpense)}}</div>
+  </div>
+  <div class="pf-stat">
+    <div class="pf-stat-top"><span class="pf-stat-label">Valeur Portefeuille</span><span class="pf-stat-icon">🏦</span></div>
+    <div class="pf-stat-value">{{formatFCFA(totalValue)}}</div>
+  </div>
+</div>
+
+<div class="pf-charts-2">
+  <div class="pf-chart-card">
+    <div class="pf-chart-title">Répartition des dépenses</div>
+    <app-chart [config]="donutConfig" [height]="200"></app-chart>
+    <div class="pf-legend">
+      @for (c of categorySummary; track c.name) {
+        <div class="pf-legend-item"><span class="pf-dot" [style.background]="c.color"></span>{{c.name}} ({{c.pct}}%)</div>
+      }
+    </div>
+  </div>
+  <div class="pf-chart-card">
+    <div class="pf-chart-title">Distribution des actifs</div>
+    <app-chart [config]="distConfig" [height]="200"></app-chart>
+    <div class="pf-legend">
+      @for (d of distribution; track d.label) {
+        <div class="pf-legend-item"><span class="pf-dot" [style.background]="d.color"></span>{{d.label}} ({{d.pct}}%)</div>
+      }
+    </div>
+  </div>
+</div>
+
+<div class="pf-full-card">
+  <div class="card-header"><div class="pf-chart-title">Flux de trésorerie</div></div>
+  <app-chart [config]="cashflowConfig" [height]="240"></app-chart>
+</div>
+
+<div class="pf-full-card">
+  <div class="card-header"><div class="pf-chart-title">Progression mensuelle</div></div>
+  <app-chart [config]="barConfig" [height]="200"></app-chart>
+</div>
+
+<div class="pf-full-card table-responsive">
+  <div class="card-header"><div class="pf-chart-title">Actifs & Comptes</div></div>
+  <table class="pf-table">
+    <thead><tr><th>Actif</th><th>Type</th><th>Valeur</th><th>Statut</th></tr></thead>
+    <tbody>
+      @for (m of movements; track m.name) {
+        <tr>
+          <td>{{m.icon}} {{m.name}}</td>
+          <td class="text-sm text-muted">{{m.category}}</td>
+          <td class="amount">{{formatFCFA(m.value)}}</td>
+          <td><span class="badge" [class.badge-neutral]="m.status==='Stable'" [class.badge-warning]="m.status==='Volatil'">{{m.status}}</span></td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<div class="pf-bottom">
+  <div class="pf-full-card">
+    <div class="card-header"><div class="pf-chart-title">Projets en cours</div><a class="btn btn-ghost btn-sm" routerLink="/projects-tasks">Voir tout</a></div>
+    @for (p of projects; track p.id) {
+      <div class="pf-project-item">
+        <div class="pf-project-header">
+          <span class="pf-project-name">{{p.name}}</span>
+          <span class="badge" [class.badge-warning]="p.status==='active'" [class.badge-info]="p.status==='planning'">{{p.status === 'active' ? 'En cours' : 'Planif'}}</span>
+        </div>
+        <div class="pf-project-desc">{{p.description || '-'}}</div>
+        <div class="progress-bar"><div class="progress-fill" [style.width.%]="p.budget ? (p.spent/p.budget)*100 : 0" [style.background]="p.color"></div></div>
+      </div>
+    } @empty { <div class="empty-state"><p>Aucun projet</p></div> }
+  </div>
+  <div class="pf-full-card">
+    <div class="card-header"><div class="pf-chart-title">Tâches prioritaires</div></div>
+    @for (t of tasks; track t.id) {
+      <div class="pf-task-item">
+        <div class="pf-task-dot" [style.background]="t.priority === 'high' ? 'var(--tertiary)' : t.priority === 'medium' ? 'var(--warning)' : 'var(--secondary)'"></div>
+        <div class="pf-task-info">
+          <div class="pf-task-title">{{t.title}}</div>
+          <div class="pf-task-meta">Délai: {{getDeadlineLabel(t)}}</div>
+        </div>
+      </div>
+    } @empty { <div class="empty-state"><p>Aucune tâche</p></div> }
+    <a class="btn btn-ghost btn-sm mt-2" routerLink="/projects-tasks">+ Gérer les tâches</a>
+  </div>
+</div>
+}

@@ -1,0 +1,48 @@
+<div class="page">
+  <div class="flex items-center justify-between">
+    <div><h1 class="page-title">Épargne</h1><p class="page-subtitle">Objectifs d'épargne</p></div>
+    <button class="btn btn-primary" (click)="showForm = true">+ Nouvel Objectif</button>
+  </div>
+
+  @if (showForm) {
+    <div class="card mb-4">
+      <div class="card-header"><div class="card-title">Nouvel objectif</div></div>
+      <div class="grid-2">
+        <div><label>Nom</label><input [(ngModel)]="form.name" placeholder="Ex: Voyage"></div>
+        <div><label>Objectif (FCFA)</label><input type="number" [(ngModel)]="form.targetAmount" step="1"></div>
+        <div><label>Montant actuel</label><input type="number" [(ngModel)]="form.currentAmount" step="0.01"></div>
+        <div><label>Date limite</label><input type="date" [(ngModel)]="form.deadline"></div>
+      </div>
+      <div class="flex gap-2 mt-4">
+        <button class="btn btn-primary" (click)="create()">Créer</button>
+        <button class="btn btn-ghost" (click)="showForm = false">Annuler</button>
+      </div>
+    </div>
+  }
+
+  <div class="grid-3">
+    @for (g of goals; track g.id) {
+      <div class="card">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <div class="goal-dot" [style.background]="g.color"></div>
+            <span class="font-semibold">{{g.name}}</span>
+          </div>
+          <button class="btn btn-ghost btn-sm" (click)="deleteGoal(g.id)">🗑️</button>
+        </div>
+        <div class="flex justify-between mb-2">
+          <span class="text-sm text-muted">Progression</span>
+          <span class="text-sm font-semibold">{{((g.currentAmount/g.targetAmount)*100).toFixed(0)}}%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" [style.width.%]="(g.currentAmount/g.targetAmount)*100" [style.background]="g.color"></div></div>
+        <div class="flex justify-between mt-2">
+          <span>{{format(g.currentAmount)}}</span>
+          <span class="text-muted">{{format(g.targetAmount)}}</span>
+        </div>
+        @if (g.deadline) { <div class="text-xs text-muted mt-2">Échéance: {{g.deadline | date:'dd/MM/yyyy'}}</div> }
+      </div>
+    } @empty {
+      <div class="empty-state card"><p>Aucun objectif d'épargne</p></div>
+    }
+  </div>
+</div>

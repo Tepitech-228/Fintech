@@ -1,0 +1,114 @@
+.account-page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.account-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.account-card {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border: 1px solid rgba(37, 99, 235, 0.12);
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 30px rgba(26, 58, 107, 0.08);
+  padding: 1.5rem;
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+
+.account-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 38px rgba(26, 58, 107, 0.12);
+  border-color: rgba(37, 99, 235, 0.2);
+}
+
+.account-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.account-card-type {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-full);
+  background: rgba(59, 130, 246, 0.08);
+  color: var(--primary);
+}
+
+.account-balance {
+  font-size: 1.45rem;
+  font-weight: 800;
+  margin: 0.75rem 0 1rem;
+  color: var(--primary);
+}
+
+.account-card-footer {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.deposit-panel {
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  background: #f3f8ff;
+}
+
+.deposit-panel .card {
+  padding: 1.25rem;
+}
+
+.deposit-panel .card-header {
+  margin-bottom: 1rem;
+}
+
+.deposit-panel input,
+.deposit-panel select {
+  background: #ffffff;
+}
+
+.deposit-panel .badge {
+  width: 100%;
+  justify-content: center;
+}
+
+.account-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.account-panel-label {
+  margin-bottom: 0.25rem;
+}
+
+.page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+@media (max-width: 768px) {
+  .account-page-header { flex-direction: column; align-items: stretch; }
+  .account-page-header .account-actions { justify-content: stretch; }
+  .account-page-header .account-actions .btn { flex: 1; }
+}
+
+@media (max-width: 480px) {
+  .account-grid { grid-template-columns: 1fr; }
+  .account-card { padding: 1rem; }
+  .account-balance { font-size: 1.25rem; }
+  .account-card-footer { flex-direction: column; }
+  .account-card-footer .btn { width: 100%; justify-content: center; }
+}

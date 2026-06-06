@@ -1,0 +1,76 @@
+<div class="page">
+  <h1 class="page-title">{{isEdit ? 'Modifier' : 'Nouvelle'}} Transaction</h1>
+  <p class="page-subtitle">Le type et le compte sont automatiques selon la catégorie choisie</p>
+
+  <div class="card" style="max-width:600px">
+    <div class="flex flex-col gap-4">
+      <div><label>Catégorie</label>
+        <select [(ngModel)]="form.categoryId" (change)="onCategoryChange()">
+          <option value="">Choisir une catégorie...</option>
+          @for (c of allCategories; track c.id) {
+            <option [value]="c.id">
+              {{c.type === 'income' ? '💰' : c.type === 'expense' ? '💳' : c.type === 'investment' ? '📈' : '🏦'}}
+              {{c.name}} ({{c.type}})
+            </option>
+          }
+        </select>
+      </div>
+
+      @if (selectedCategoryBudget && selectedCategoryBudget.monthlyBudget > 0) {
+        <div class="budget-hint">
+          <div class="flex justify-between text-xs mb-1">
+            <span class="text-muted">Budget mensuel</span>
+            <span [style.color]="selectedCategoryBudgetColor" class="font-semibold">
+              {{selectedCategoryBudgetPct.toFixed(0)}}% utilisé
+            </span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="selectedCategoryBudgetPct" [style.background]="selectedCategoryBudgetColor"></div>
+          </div>
+          <div class="flex justify-between text-xs mt-1">
+            <span class="text-muted">{{format(selectedCategoryBudget.monthlySpent)}} / {{format(selectedCategoryBudget.monthlyBudget)}}</span>
+            <span [style.color]="selectedCategoryBudgetColor">
+              Reste <strong>{{format(selectedCategoryBudget.budgetRemaining)}}</strong>
+            </span>
+          </div>
+        </div>
+      } @else if (form.categoryId) {
+        <div class="text-xs text-muted">Aucun budget défini pour cette catégorie.</div>
+      }
+
+      @if (form.type) {
+        <div class="type-indicator" [class.income]="form.type==='income'" [class.expense]="form.type==='expense'" [class.investment]="form.type==='investment'" [class.debt]="form.type==='debt'">
+          {{form.type === 'income' ? '📈 Revenu' : form.type === 'expense' ? '💳 Dépense' : form.type === 'investment' ? '📊 Investissement' : '🏦 Remboursement Dette'}}
+        </div>
+      }
+
+      <div><label>Montant (FCFA)</label><input type="number" [(ngModel)]="form.amount" step="1" placeholder="0"></div>
+      <div><label>Description</label><input [(ngModel)]="form.description" placeholder="Ex: Courses au supermarché"></div>
+      <div class="grid-2">
+        <div><label>Compte</label>
+          <select [(ngModel)]="form.accountId">
+            @if (!form.accountId) { <option value="">Auto-sélectionné...</option> }
+            @for (a of accounts; track a.id) {
+              <option [value]="a.id">{{a.name}}</option>
+            }
+          </select>
+        </div>
+        <div><label>Date</label><input type="date" [(ngModel)]="form.date"></div>
+      </div>
+      @if (showGoalSelector) {
+        <div><label>Objectif d'épargne (optionnel)</label>
+          <select [(ngModel)]="form.goalId">
+            <option value="">Aucun</option>
+            @for (g of goals; track g.id) {
+              <option [value]="g.id">{{g.name}}</option>
+            }
+          </select>
+        </div>
+      }
+      <div class="flex gap-2 mt-2">
+        <button class="btn btn-primary" (click)="save()">{{isEdit ? 'Mettre à jour' : 'Ajouter'}}</button>
+        <a class="btn btn-ghost" routerLink="/transactions">Annuler</a>
+      </div>
+    </div>
+  </div>
+</div>

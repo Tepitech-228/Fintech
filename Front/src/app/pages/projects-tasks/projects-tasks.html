@@ -1,0 +1,86 @@
+<div class="page">
+  <div class="flex items-center justify-between">
+    <div><h1 class="page-title">Projets & Tâches</h1></div>
+  </div>
+
+  <div class="tabs mb-4">
+    <button class="tab" [class.active]="tab==='projets'" (click)="tab='projets'">📁 Projets</button>
+    <button class="tab" [class.active]="tab==='taches'" (click)="tab='taches'">✅ Tâches</button>
+  </div>
+
+  @if (tab === 'projets') {
+    <div class="flex justify-end mb-3">
+      <button class="btn btn-primary" (click)="showProjectForm = !showProjectForm">+ Nouveau Projet</button>
+    </div>
+    @if (showProjectForm) {
+      <div class="card mb-4">
+        <div class="card-header"><div class="card-title">Nouveau projet</div></div>
+        <div class="grid-2">
+          <div><label>Nom</label><input [(ngModel)]="projectForm.name"></div>
+          <div><label>Budget</label><input type="number" [(ngModel)]="projectForm.budget" step="0.01"></div>
+          <div><label>Début</label><input type="date" [(ngModel)]="projectForm.startDate"></div>
+          <div><label>Fin</label><input type="date" [(ngModel)]="projectForm.endDate"></div>
+          <div style="grid-column:span 2"><label>Description</label><textarea [(ngModel)]="projectForm.description" rows="2"></textarea></div>
+        </div>
+        <div class="flex gap-2 mt-4">
+          <button class="btn btn-primary" (click)="createProject()">Créer</button>
+          <button class="btn btn-ghost" (click)="showProjectForm = false">Annuler</button>
+        </div>
+      </div>
+    }
+    <div class="grid-3">
+      @for (p of projects; track p.id) {
+        <div class="card">
+          <div class="flex items-center justify-between mb-2">
+            <span class="badge" [style.background]="p.color+'20'" [style.color]="p.color">{{p.status}}</span>
+            <button class="btn btn-ghost btn-sm" (click)="deleteProject(p.id)">🗑️</button>
+          </div>
+          <div class="font-semibold" style="font-size:1rem">{{p.name}}</div>
+          @if (p.description) { <div class="text-sm text-muted mt-1 truncate">{{p.description}}</div> }
+          <div class="flex justify-between mt-3 mb-1 text-sm"><span>Dépensé</span><span class="font-semibold">{{format(p.spent)}} / {{format(p.budget)}}</span></div>
+          <div class="progress-bar"><div class="progress-fill" [style.width.%]="p.budget ? (p.spent/p.budget)*100 : 0" [style.background]="p.color"></div></div>
+          @if (p.startDate) { <div class="text-xs text-muted mt-2">{{p.startDate | date:'dd/MM/yyyy'}} @if (p.endDate) { → {{p.endDate | date:'dd/MM/yyyy'}} }</div> }
+        </div>
+      } @empty { <div class="empty-state card"><p>Aucun projet</p></div> }
+    </div>
+  }
+
+  @if (tab === 'taches') {
+    <div class="flex justify-end mb-3">
+      <button class="btn btn-primary" (click)="showTaskForm = !showTaskForm">+ Nouvelle Tâche</button>
+    </div>
+    @if (showTaskForm) {
+      <div class="card mb-4">
+        <div class="card-header"><div class="card-title">Nouvelle tâche</div></div>
+        <div class="grid-2">
+          <div><label>Titre</label><input [(ngModel)]="taskForm.title"></div>
+          <div><label>Priorité</label><select [(ngModel)]="taskForm.priority"><option value="low">Basse</option><option value="medium">Moyenne</option><option value="high">Haute</option></select></div>
+          <div><label>Échéance</label><input type="date" [(ngModel)]="taskForm.dueDate"></div>
+          <div><label>Catégorie</label><input [(ngModel)]="taskForm.category"></div>
+          <div style="grid-column:span 2"><label>Description</label><textarea [(ngModel)]="taskForm.description" rows="2"></textarea></div>
+        </div>
+        <div class="flex gap-2 mt-4">
+          <button class="btn btn-primary" (click)="createTask()">Créer</button>
+          <button class="btn btn-ghost" (click)="showTaskForm = false">Annuler</button>
+        </div>
+      </div>
+    }
+    <div class="card table-responsive">
+      <table class="table">
+        <thead><tr><th>Statut</th><th>Titre</th><th>Priorité</th><th>Catégorie</th><th>Échéance</th><th></th></tr></thead>
+        <tbody>
+          @for (t of tasks; track t.id) {
+            <tr>
+              <td><input type="checkbox" [checked]="t.status==='done'" (change)="toggleTask(t)"></td>
+              <td [style.textDecoration]="t.status==='done' ? 'line-through' : 'none'">{{t.title}}</td>
+              <td><span class="badge" [class.badge-warning]="t.priority==='high'" [class.badge-info]="t.priority==='medium'" [class.badge-neutral]="t.priority==='low'">{{t.priority}}</span></td>
+              <td class="text-sm text-muted">{{t.category || '-'}}</td>
+              <td class="text-sm text-muted">{{t.dueDate ? (t.dueDate | date:'dd/MM/yyyy') : '-'}}</td>
+              <td><button class="btn btn-ghost btn-sm" (click)="deleteTask(t.id)">🗑️</button></td>
+            </tr>
+          } @empty { <tr><td colspan="6"><div class="empty-state"><p>Aucune tâche</p></div></td></tr> }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

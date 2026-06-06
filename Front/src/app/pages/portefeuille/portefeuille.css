@@ -1,0 +1,54 @@
+.pf-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+.pf-header h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; color: var(--primary); }
+.pf-header p { font-size: 0.875rem; color: var(--on-surface-variant); }
+
+.pf-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+.pf-stat {
+  background: var(--surface-container-lowest); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card); padding: 1.25rem;
+}
+.pf-stat-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
+.pf-stat-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--on-surface-variant); }
+.pf-stat-icon { font-size: 1.5rem; }
+.pf-stat-value { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+
+.pf-charts-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+.pf-chart-card { background: var(--surface-container-lowest); border-radius: var(--radius-md); box-shadow: var(--shadow-card); padding: 1.25rem; }
+.pf-chart-title { font-size: 0.9375rem; font-weight: 600; margin-bottom: 0.75rem; }
+
+.pf-legend { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+.pf-legend-item { display: flex; align-items: center; gap: 0.375rem; font-size: 0.75rem; color: var(--on-surface-variant); }
+.pf-dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; flex-shrink: 0; }
+
+.pf-full-card { background: var(--surface-container-lowest); border-radius: var(--radius-md); box-shadow: var(--shadow-card); padding: 1.25rem; margin-bottom: 1.5rem; }
+.pf-full-card .card-header { margin-bottom: 0.75rem; }
+
+.pf-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.pf-project-item { padding: 0.75rem 0; border-bottom: 1px solid var(--surface-container-highest); }
+.pf-project-item:last-child { border-bottom: none; }
+.pf-project-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.25rem; }
+.pf-project-name { font-size: 0.875rem; font-weight: 500; }
+.pf-project-desc { font-size: 0.75rem; color: var(--on-surface-variant); margin-bottom: 0.5rem; }
+
+.pf-task-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 0; border-bottom: 1px solid var(--surface-container-highest); }
+.pf-task-item:last-child { border-bottom: none; }
+.pf-task-dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; flex-shrink: 0; }
+.pf-task-info { flex: 1; }
+.pf-task-title { font-size: 0.875rem; font-weight: 500; }
+.pf-task-meta { font-size: 0.75rem; color: var(--on-surface-variant); }
+
+.pf-table { width: 100%; border-collapse: collapse; }
+.pf-table th { font-size: clamp(0.5625rem, 1.5vw, 0.6875rem); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--on-surface-variant); text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--surface-container-highest); }
+.pf-table td { padding: 0.5rem; border-bottom: 1px solid var(--surface-container-highest); font-size: clamp(0.6875rem, 2vw, 0.8125rem); }
+.pf-table tr:last-child td { border-bottom: none; }
+.pf-table .amount { text-align: right; font-weight: 600; }
+
+@media (max-width: 768px) {
+  .pf-stats { grid-template-columns: 1fr; }
+  .pf-charts-2 { grid-template-columns: 1fr; }
+  .pf-bottom { grid-template-columns: 1fr; }
+  .pf-table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .pf-table th { font-size: clamp(0.5rem, 2vw, 0.625rem); white-space: nowrap; }
+  .pf-table td { font-size: clamp(0.625rem, 2.5vw, 0.75rem); white-space: nowrap; }
+  .pf-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+}

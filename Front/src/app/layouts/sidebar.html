@@ -1,0 +1,57 @@
+<aside class="sidebar" [class.open]="isOpen">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <img src="logodepense.png" alt="Finora" class="logo-img">
+    </div>
+    <button class="sidebar-close" (click)="close()">✕</button>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="sidebar-section">Vue d'ensemble</div>
+    <a class="nav-item" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" (click)="close()">
+      <span class="icon">📊</span> Tableau de Bord
+    </a>
+    <a class="nav-item" routerLink="/accounts" routerLinkActive="active" (click)="close()">
+      <span class="icon">🏦</span> Avoirs
+    </a>
+    <a class="nav-item" routerLink="/history" routerLinkActive="active" (click)="close()">
+      <span class="icon">📜</span> Historique Financier
+    </a>
+    <a class="nav-item" routerLink="/portefeuille" routerLinkActive="active" (click)="close()">
+      <span class="icon">💎</span> Portefeuille
+    </a>
+
+    <div class="sidebar-section">Transactions</div>
+    <a class="nav-item" routerLink="/transactions" routerLinkActive="active" (click)="close()">
+      <span class="icon">💳</span> Dépenses
+    </a>
+    <a class="nav-item" routerLink="/budget-analysis" routerLinkActive="active" (click)="close()">
+      <span class="icon">📊</span> Budget & Analyse
+    </a>
+    <a class="nav-item" routerLink="/bilan" routerLinkActive="active" (click)="close()">
+      <span class="icon">📋</span> Bilan Mensuel
+    </a>
+
+    <div class="sidebar-section">Gestion</div>
+    <a class="nav-item" routerLink="/savings" routerLinkActive="active" (click)="close()">
+      <span class="icon">🐷</span> Épargne
+    </a>
+    <a class="nav-item" routerLink="/projects-tasks" routerLinkActive="active" (click)="close()">
+      <span class="icon">📋</span> Projets & Tâches
+    </a>
+    <a class="nav-item" routerLink="/calendar" routerLinkActive="active" (click)="close()">
+      <span class="icon">📅</span> Calendrier
+    </a>
+
+    <div class="sidebar-section">Système</div>
+    <a class="nav-item" routerLink="/settings" routerLinkActive="active" (click)="close()">
+      <span class="icon">⚙️</span> Paramètres
+    </a>
+  </nav>
+</aside>
+@if (isOpen) { <div class="sidebar-backdrop" (click)="close()"></div> }
+<button class="hamburger" (click)="toggle()" [class.open]="isOpen">
+  <span></span><span></span><span></span>
+</button>
+<main class="main-content">
+  <router-outlet></router-outlet>
+</main>

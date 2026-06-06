@@ -1,0 +1,18 @@
+<div class="page">
+  <h1 class="page-title">Paramètres</h1>
+  <p class="page-subtitle">Gérez votre profil et préférences</p>
+
+  <div class="card" style="max-width:600px">
+    <div class="card-header"><div class="card-title">Profil</div></div>
+    <div class="flex flex-col gap-4">
+      <div><label>Nom</label><input [(ngModel)]="profile.name"></div>
+      <div><label>Email</label><input type="email" [(ngModel)]="profile.email"></div>
+      <div class="grid-2">
+        <div><label>Devise</label><select [(ngModel)]="profile.currency"><option value="XOF">FCFA (XOF)</option><option value="EUR">EUR (€)</option><option value="USD">USD ($)</option></select></div>
+        <div><label>Locale</label><select [(ngModel)]="profile.locale"><option value="fr-FR">Français</option><option value="en-US">English</option></select></div>
+      </div>
+      <div><label>Thème</label><select [(ngModel)]="profile.theme"><option value="light">Clair</option><option value="dark">Sombre</option></select></div>
+      <button class="btn btn-primary" (click)="save()" style="align-self:flex-start">Enregistrer</button>
+    </div>
+  </div>
+</div>

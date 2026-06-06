@@ -1,0 +1,120 @@
+<div class="page">
+  @if (loading) {
+    <div class="overview-cards">
+      <div class="overview-card card loading-pulse"><div class="label">———</div><div class="sub">———</div></div>
+      <div class="overview-card card loading-pulse"><div class="label">———</div><div class="sub">———</div></div>
+      <div class="overview-card card loading-pulse"><div class="label">———</div><div class="sub">———</div></div>
+      <div class="overview-card card loading-pulse"><div class="label">———</div><div class="sub">———</div></div>
+    </div>
+  } @else {
+  <h1 class="page-title">Tableau de Bord</h1>
+  <p class="page-subtitle">Vue d'ensemble de vos finances</p>
+
+  <div class="overview-cards">
+    <div class="overview-card card">
+      <div class="label">Solde Total</div>
+      <div class="value">{{format(data?.totalBalance || 0)}}</div>
+      <div class="sub">Tous comptes confondus</div>
+    </div>
+    <div class="overview-card card">
+      <div class="label">Revenus du mois</div>
+      <div class="value positive">{{format(data?.monthlyIncome || 0)}}</div>
+      <div class="sub">{{month}}</div>
+    </div>
+    <div class="overview-card card">
+      <div class="label">Dépenses du mois</div>
+      <div class="value negative">{{format(data?.monthlyExpense || 0)}}</div>
+      <div class="sub">{{month}}</div>
+    </div>
+    <div class="overview-card card">
+      <div class="label">Balance mensuelle</div>
+      <div class="value" [class.positive]="(data?.monthlyBalance || 0) >= 0" [class.negative]="(data?.monthlyBalance || 0) < 0">
+        {{format(data?.monthlyBalance || 0)}}
+      </div>
+      <div class="sub">Revenus - Dépenses</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:1.5rem">
+    <div class="card-header"><div class="card-title">Tendance Revenus / Dépenses (6 mois)</div></div>
+    <app-chart [config]="trendConfig" [height]="240"></app-chart>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="flex flex-col gap-4">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Transactions récentes</div>
+          <a class="btn btn-ghost btn-sm" routerLink="/transactions">Voir tout</a>
+        </div>
+        @if (data?.recentTransactions?.length) {
+          <table class="table">
+            <thead>
+              <tr><th>Date</th><th>Description</th><th>Catégorie</th><th>Montant</th></tr>
+            </thead>
+            <tbody>
+              @for (t of data?.recentTransactions; track t.id) {
+                <tr>
+                  <td class="text-sm text-muted">{{t.date | date:'dd/MM'}}</td>
+                  <td>{{t.description || '-'}}</td>
+                  <td><span class="badge badge-neutral">{{t.Category?.name || '-'}}</span></td>
+                  <td class="amount" [class.income]="t.type==='income'" [class.expense]="t.type==='expense'">
+                    {{t.type==='income' ? '+' : '-'}}{{format(t.amount)}}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        } @else {
+          <div class="empty-state"><p>Aucune transaction récente</p></div>
+        }
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Objectifs d'épargne</div></div>
+        @if (data?.goals?.length) {
+          @for (g of data?.goals; track g.id) {
+            <div class="goal-card">
+              <div class="goal-icon" [style.background]="g.color+'20'">{{g.icon === 'savings' ? '🐷' : '🎯'}}</div>
+              <div class="goal-info">
+                <div class="goal-name">{{g.name}}</div>
+                <div class="goal-progress">{{format(g.currentAmount)}} / {{format(g.targetAmount)}}</div>
+                <div class="progress-bar mt-2"><div class="progress-fill" [style.width.%]="(g.currentAmount/g.targetAmount)*100" [style.background]="g.color"></div></div>
+              </div>
+              <div class="goal-amount">{{((g.currentAmount/g.targetAmount)*100).toFixed(0)}}%</div>
+            </div>
+          }
+        } @else {
+          <div class="empty-state"><p>Aucun objectif d'épargne</p></div>
+        }
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">Tâches en cours</div></div>
+        @if (data?.tasks?.length) {
+          @for (t of data?.tasks; track t.id) {
+            <div class="task-item">
+              <div class="task-check">
+                <input type="checkbox" [checked]="t.status==='done'" (change)="toggleTask(t)">
+              </div>
+              <div class="task-content">
+                <div class="task-title">{{t.title}}</div>
+                <div class="task-meta">
+                  <span class="badge" [class.badge-warning]="t.priority==='high'" [class.badge-info]="t.priority==='medium'" [class.badge-neutral]="t.priority==='low'">
+                    {{t.priority}}
+                  </span>
+                  @if (t.dueDate) { <span class="ml-2">Échéance: {{t.dueDate | date:'dd/MM/yyyy'}}</span> }
+                </div>
+              </div>
+            </div>
+          }
+        } @else {
+          <div class="empty-state"><p>Aucune tâche en cours</p></div>
+        }
+      </div>
+    </div>
+  </div>
+  }
+</div>

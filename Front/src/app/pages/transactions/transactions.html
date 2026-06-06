@@ -1,0 +1,172 @@
+<div class="page">
+  <div class="flex items-center justify-between">
+    <div><h1 class="page-title">Dépenses</h1><p class="page-subtitle">Historique des transactions et planification</p></div>
+    <button class="btn btn-primary" (click)="showForm = !showForm">{{showForm ? 'Fermer' : '+ Nouvelle transaction'}}</button>
+  </div>
+
+  <ng-container *ngIf="showForm">
+    <div class="card mb-4">
+      <div class="card-header"><div class="card-title">Nouvelle transaction</div></div>
+      <div class="flex flex-col gap-4">
+        <div><label>Catégorie</label>
+          <select [(ngModel)]="form.categoryId" (change)="onCategoryChange()">
+            <option value="">Choisir une catégorie...</option>
+            <option *ngFor="let c of categories" [value]="c.id">{{c.name}} ({{c.type}})</option>
+          </select>
+        </div>
+
+        @if (selectedCategoryBudget && selectedCategoryBudget.monthlyBudget > 0) {
+          <div class="budget-hint">
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-muted">Budget mensuel</span>
+              <span [style.color]="selectedCategoryBudgetColor" class="font-semibold">
+                {{selectedCategoryBudgetPct.toFixed(0)}}% utilisé
+              </span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="selectedCategoryBudgetPct" [style.background]="selectedCategoryBudgetColor"></div>
+            </div>
+            <div class="flex justify-between text-xs mt-1">
+              <span class="text-muted">{{format(selectedCategoryBudget.monthlySpent)}} / {{format(selectedCategoryBudget.monthlyBudget)}}</span>
+              <span [style.color]="selectedCategoryBudgetColor">
+                Reste <strong>{{format(selectedCategoryBudget.budgetRemaining)}}</strong>
+              </span>
+            </div>
+          </div>
+        } @else if (form.categoryId) {
+          <div class="text-xs text-muted">Aucun budget défini pour cette catégorie.</div>
+        }
+
+        <div *ngIf="form.type" class="type-indicator" [class.income]="form.type==='income'" [class.expense]="form.type==='expense'" [class.investment]="form.type==='investment'" [class.debt]="form.type==='debt'">
+          {{form.type === 'income' ? '📈 Revenu' : form.type === 'expense' ? '💳 Dépense' : form.type === 'investment' ? '📊 Investissement' : '🏦 Remboursement Dette'}}
+        </div>
+
+        <div class="grid-2">
+          <div><label>Montant (FCFA)</label><input type="number" [(ngModel)]="form.amount" step="1" placeholder="0"></div>
+          <div><label>Date</label><input type="date" [(ngModel)]="form.date"></div>
+        </div>
+        <div><label>Description</label><input [(ngModel)]="form.description" placeholder="Ex: Courses"></div>
+        <div><label>Compte</label>
+          <select [(ngModel)]="form.accountId">
+            <option *ngIf="!form.accountId" value="">Auto-sélectionné...</option>
+            <option *ngFor="let a of accounts" [value]="a.id">{{a.name}}</option>
+          </select>
+        </div>
+        <div *ngIf="goals.length > 0 && (form.type === 'investment' || form.type === 'income' || form.type === 'debt')">
+          <label>Objectif d'épargne (optionnel)</label>
+          <select [(ngModel)]="form.goalId">
+            <option value="">Aucun</option>
+            <option *ngFor="let g of goals" [value]="g.id">{{g.name}}</option>
+          </select>
+        </div>
+        <div *ngIf="transactionError" class="badge badge-danger" style="display:block; margin-bottom:1rem">{{transactionError}}</div>
+        <div><button class="btn btn-primary" (click)="save()">Ajouter</button></div>
+      </div>
+    </div>
+  </ng-container>
+
+  <div class="card mb-4">
+    <div class="flex items-center gap-4" style="flex-wrap:wrap">
+      <div style="min-width:150px"><label>Type</label><select [(ngModel)]="filters.type" (change)="load()"><option value="">Tous</option><option value="income">Revenus</option><option value="expense">Dépenses</option><option value="investment">Investissements</option><option value="debt">Dettes</option></select></div>
+      <div style="min-width:150px"><label>Catégorie</label><select [(ngModel)]="filters.categoryId" (change)="load()"><option value="">Toutes</option><option *ngFor="let c of categories" [value]="c.id">{{c.name}}</option></select></div>
+      <div><label>Du</label><input type="date" [(ngModel)]="filters.startDate" (change)="load()"></div>
+      <div><label>Au</label><input type="date" [(ngModel)]="filters.endDate" (change)="load()"></div>
+      <button class="btn btn-ghost btn-sm" style="margin-top:1.5rem" (click)="processRecurring()">🔄 Générer récurrentes</button>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="flex items-center justify-between gap-4" style="flex-wrap:wrap">
+      <div>
+        <h2 class="card-title">Vue par période</h2>
+        <p class="text-sm text-muted">Consultez vos dépenses et investissements par jour, semaine, mois ou année.</p>
+      </div>
+      <div class="flex items-center gap-2" style="flex-wrap:wrap">
+        <label>Période</label>
+        <select [(ngModel)]="overviewPeriod" (change)="loadOverview()">
+          <option value="day">Jour</option>
+          <option value="week">Semaine</option>
+          <option value="month">Mois</option>
+          <option value="year">Année</option>
+        </select>
+        <label>Date de référence</label>
+        <input type="date" [(ngModel)]="overviewDate" (change)="loadOverview()">
+      </div>
+    </div>
+    <div class="grid-4 gap-3 mt-4">
+      <div class="card-stat">Jour/semaines: <strong>{{overviewPeriod}}</strong></div>
+      <div class="card-stat">Total revenu: <strong>{{format(overview.totals?.income || 0)}}</strong></div>
+      <div class="card-stat">Total dépense: <strong>{{format(overview.totals?.expense || 0)}}</strong></div>
+      <div class="card-stat">Total investissement: <strong>{{format(overview.totals?.investment || 0)}}</strong></div>
+      <div class="card-stat">Total dette: <strong>{{format(overview.totals?.debt || 0)}}</strong></div>
+      <div class="card-stat">Solde: <strong>{{format(overview.balance || 0)}}</strong></div>
+      <div class="card-stat">Transactions: <strong>{{overview.count || 0}}</strong></div>
+      <div class="card-stat">Période: <strong>{{overview.startDate}} → {{overview.endDate}}</strong></div>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="card-title">Planification investissements récurrents</h2>
+        <p class="text-sm text-muted">Programmez des versements automatiques vers un objectif d'épargne.</p>
+      </div>
+      <button class="btn btn-primary btn-sm" (click)="showPlanForm = !showPlanForm">{{showPlanForm ? 'Fermer le formulaire' : '+ Nouveau plan'}}</button>
+    </div>
+
+    <ng-container *ngIf="showPlanForm">
+      <div class="card-body mt-4 grid-2 gap-4">
+        <div><label>Nom du plan</label><input [(ngModel)]="planForm.name" placeholder="Ex: Investissement mensuel"></div>
+        <div><label>Montant</label><input type="number" [(ngModel)]="planForm.amount" step="1"></div>
+        <div><label>Fréquence</label><select [(ngModel)]="planForm.frequency"><option value="daily">Quotidien</option><option value="weekly">Hebdomadaire</option><option value="monthly">Mensuel</option><option value="yearly">Annuel</option></select></div>
+        <div><label>Date de départ</label><input type="date" [(ngModel)]="planForm.startDate"></div>
+        <div><label>Date de fin (optionnel)</label><input type="date" [(ngModel)]="planForm.endDate"></div>
+        <div><label>Objectif</label><input type="number" [(ngModel)]="planForm.targetAmount" step="1"></div>
+        <div><label>Objectif d'épargne</label>
+          <select [(ngModel)]="planForm.savingGoalId">
+            <option value="">Choisir un objectif...</option>
+            <option *ngFor="let g of goals" [value]="g.id">{{g.name}}</option>
+          </select>
+        </div>
+        <div><button class="btn btn-primary" (click)="savePlan()">Créer le plan</button></div>
+      </div>
+    </ng-container>
+
+    <div class="mt-4 table-responsive">
+      <table *ngIf="investmentPlans.length > 0" class="table">
+        <thead><tr><th>Plan</th><th>Montant</th><th>Fréquence</th><th>Prochaine exécution</th><th>Objectif</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          <tr *ngFor="let plan of investmentPlans">
+            <td>{{plan.name}}</td>
+            <td>{{format(plan.amount)}}</td>
+            <td>{{plan.frequency}}</td>
+            <td>{{plan.nextExecutionDate}}</td>
+            <td>{{plan.SavingGoal?.name || '—'}}</td>
+            <td>{{plan.isActive ? 'Actif' : 'Inactif'}}</td>
+            <td><button class="btn btn-ghost btn-sm" (click)="executeInvestmentPlan(plan.id)">Exécuter</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="investmentPlans.length === 0" class="empty-state"><p>Aucun plan d'investissement défini.</p></div>
+    </div>
+  </div>
+
+  <div class="card table-responsive">
+    <table class="table">
+      <thead><tr><th>Date</th><th>Description</th><th>Catégorie</th><th>Compte</th><th class="amount">Montant</th><th></th></tr></thead>
+      <tbody>
+        <tr *ngFor="let t of transactions">
+          <td class="text-sm text-muted">{{t.date | date:'dd/MM/yyyy'}}</td>
+          <td>{{t.description || '-'}}</td>
+          <td><span class="badge badge-neutral">{{t.Category?.name || '-'}}</span></td>
+          <td class="text-sm text-muted">{{t.Account?.name || '-'}}</td>
+          <td class="amount" [class.income]="t.type==='income'" [class.expense]="t.type==='expense'">
+            {{t.type==='income' ? '+' : '-'}}{{format(t.amount)}}
+          </td>
+          <td><button class="btn btn-ghost btn-sm" (click)="deleteTxn(t.id)">🗑️</button></td>
+        </tr>
+        <tr *ngIf="transactions.length === 0"><td colspan="6"><div class="empty-state"><p>Aucune transaction</p></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>

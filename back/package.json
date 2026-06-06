@@ -1,0 +1,26 @@
+{
+  "name": "trackr-api",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "build": "cd ../Front && npx ng build --configuration production",
+    "seed": "node src/seed.js",
+    "db:init": "node src/db/init.js",
+    "db:migrate": "node src/db/migrate.js up",
+    "db:migrate:down": "node src/db/migrate.js down"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-validator": "^7.3.2",
+    "jsonwebtoken": "^9.0.3",
+    "morgan": "^1.11.0",
+    "mysql2": "^3.14.1",
+    "node-cron": "^3.0.2",
+    "sequelize": "^6.37.6"
+  }
+}

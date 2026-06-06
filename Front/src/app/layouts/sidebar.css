@@ -1,0 +1,85 @@
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--sidebar-w);
+  max-width: 100vw;
+  height: 100vh;
+  background: var(--primary);
+  border-right: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  flex-direction: column;
+  z-index: 200;
+  transition: transform 250ms ease;
+}
+.sidebar-header { display: flex; align-items: center; justify-content: space-between; padding-right: 0.5rem; }
+.sidebar-logo { padding: 1.5rem 1.25rem; }
+.sidebar-logo .logo-img { max-width: 140px; height: auto; display: block; }
+.sidebar-nav { flex: 1; padding: 0.75rem; overflow-y: auto; }
+.sidebar-section { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.4); padding: 0.75rem 0.5rem 0.25rem; }
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.7);
+  transition: all var(--transition);
+  cursor: pointer;
+  text-decoration: none;
+}
+.nav-item:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.nav-item.active { background: rgba(255,255,255,0.15); color: #fff; }
+.nav-item .icon { font-size: 1.25rem; width: 1.5rem; text-align: center; }
+
+.sidebar-close { display: none; background: none; border: none; color: rgba(255,255,255,0.6); font-size: 1.25rem; padding: 0.5rem; cursor: pointer; }
+
+.sidebar-backdrop { display: none; }
+
+.hamburger { display: none; }
+
+.main-content { margin-left: var(--sidebar-w); min-height: 100vh; background: var(--surface); }
+
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+
+  .sidebar-close { display: block; }
+
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 199;
+    background: rgba(0,0,0,0.4);
+  }
+
+  .hamburger {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: fixed;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 150;
+    background: var(--primary);
+    border: none;
+    padding: 0.5rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+  }
+  .hamburger span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: #fff;
+    border-radius: 1px;
+    transition: transform 250ms ease, opacity 250ms ease;
+  }
+  .hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+  .main-content { margin-left: 0; }
+}

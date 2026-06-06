@@ -1,0 +1,104 @@
+<div class="calendar-page">
+  <div class="calendar-header">
+    <div class="calendar-header-left">
+      <h1>Calendrier</h1>
+      <p>Transactions, tâches et projets par mois</p>
+    </div>
+    <div class="calendar-header-actions">
+      <button class="btn btn-primary btn-sm" (click)="toggleAddForm()">{{showAddForm ? 'Fermer' : '+ Nouvel événement'}}</button>
+    </div>
+  </div>
+
+  @if (showAddForm) {
+    <div class="card quick-add-card">
+      <div class="card-header"><div class="card-title">Nouvel événement</div></div>
+      <div class="flex gap-4" style="align-items: flex-end">
+        <div style="flex:2"><label>Titre</label><input [(ngModel)]="newEvent.title" placeholder="Titre"></div>
+        <div style="flex:1"><label>Date</label><input type="date" [(ngModel)]="newEvent.date"></div>
+        <div style="flex:1">
+          <label>Type</label>
+          <select [(ngModel)]="newEvent.type">
+            <option value="Finance">💰 Finance</option>
+            <option value="Tâche">✅ Tâche</option>
+            <option value="Projet">📁 Projet</option>
+          </select>
+        </div>
+        <div style="flex:1"><label>Montant</label><input type="number" [(ngModel)]="newEvent.amount" placeholder="0"></div>
+        <button class="btn btn-primary" (click)="addEvent()">Ajouter</button>
+      </div>
+    </div>
+  }
+
+  <div class="calendar-grid">
+    <div class="calendar-main">
+      <div class="month-header">
+        <h2>{{monthYear}}</h2>
+        <div class="month-nav">
+          <button (click)="prevMonth()">&#8249;</button>
+          <button (click)="nextMonth()">&#8250;</button>
+        </div>
+      </div>
+
+      <div class="weekdays">
+        <span>Lun</span><span>Mar</span><span>Mer</span><span>Jeu</span><span>Ven</span><span>Sam</span><span>Dim</span>
+      </div>
+
+      <div class="days-grid">
+        @for (day of calendarDays; track $index) {
+          <div class="day-cell" [class.other-month]="day.otherMonth" [class.today]="day.isToday" [class.selected]="selectedDay?.num === day.num && !day.otherMonth" (click)="onDayClick(day)">
+            <div class="day-num" [class.has-events]="(eventsByDay[day.num]?.length || 0) > 0 && !day.otherMonth">{{day.num}}</div>
+            @for (ev of day.events; track ev.title) {
+              <div class="day-event" [class]="ev.type">{{ev.type === 'finance' ? '💰' : ev.type === 'task' ? '✅' : '📁'}} {{ev.title.length > 18 ? ev.title.slice(0, 18)+'…' : ev.title}}</div>
+            }
+            @if ((eventsByDay[day.num]?.length || 0) > 3) {
+              <div class="day-more">+{{(eventsByDay[day.num]?.length || 0) - 3}} autres</div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="calendar-sidebar">
+      @if (selectedDay) {
+        <div class="card day-detail-card">
+          <div class="card-header">
+            <div class="card-title">{{selectedDay.num}} {{monthYear.split(' ')[0]}} {{year}}</div>
+            <button class="btn btn-ghost btn-sm" (click)="selectedDay = null; selectedDayEvents = []">✕</button>
+          </div>
+          @if (selectedDayEvents.length === 0) {
+            <div class="empty-state" style="padding:1rem 0"><p>Aucun événement ce jour</p></div>
+          }
+          @for (ev of selectedDayEvents; track ev.title) {
+            <div class="detail-event">
+              <span class="detail-icon">{{getEventIcon(ev.type)}}</span>
+              <div class="detail-info">
+                <span class="detail-title">{{ev.title}}</span>
+                @if (ev.amount) { <span class="detail-amount">{{ev.amount > 0 ? '+' : ''}}{{fmtCFA(ev.amount < 0 ? -ev.amount : ev.amount)}}</span> }
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="card day-detail-card">
+          <div class="empty-state" style="padding:2rem 0">
+            <p>Cliquez sur un jour pour voir les détails</p>
+          </div>
+        </div>
+      }
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">Légende</div></div>
+        <div class="legend-list">
+          <div class="legend-item"><span class="legend-dot finance"></span> Transactions</div>
+          <div class="legend-item"><span class="legend-dot task"></span> Tâches</div>
+          <div class="legend-item"><span class="legend-dot project"></span> Projets</div>
+        </div>
+      </div>
+
+      <div class="overview-card">
+        <div class="o-label">Synthèse</div>
+        <div class="o-value">{{getTotalEvents()}} événements ce mois</div>
+      </div>
+    </div>
+  </div>
+</div>

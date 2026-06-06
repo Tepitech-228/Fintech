@@ -1,0 +1,35 @@
+.bilan-stats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.75rem; margin-bottom: 1.5rem; }
+.bilan-card {
+  background: var(--surface-container-lowest); border-radius: var(--radius-md); box-shadow: var(--shadow-card);
+  padding: 1rem;
+}
+.bilan-card-icon { font-size: 1.25rem; margin-bottom: 0.25rem; }
+.bilan-card-label { font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--on-surface-variant); }
+.bilan-card-value { font-size: 1.125rem; font-weight: 700; margin-top: 0.25rem; color: var(--primary); }
+.bilan-card.income .bilan-card-value { color: var(--success); }
+.bilan-card.expense .bilan-card-value { color: var(--tertiary); }
+.bilan-card.invest .bilan-card-value { color: var(--accent); }
+.bilan-card.debt .bilan-card-value { color: #d97706; }
+.bilan-card.saving-rate .bilan-card-value { font-size: 1.5rem; }
+
+.bilan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+.bilan-big-value { font-size: 2rem; font-weight: 800; color: var(--primary); letter-spacing: -0.02em; }
+.bilan-sub { display: flex; gap: 1rem; font-size: 0.875rem; margin-top: 0.25rem; color: var(--on-surface-variant); }
+
+.bilan-goal { padding: 0.5rem 0; border-bottom: 1px solid var(--surface-container-highest); }
+.bilan-goal:last-child { border-bottom: none; }
+
+.bilan-budget-summary { font-size: 0.875rem; color: var(--on-surface-variant); }
+
+.bilan-top-cat { padding: 0.375rem 0; border-bottom: 1px solid var(--surface-container-highest); }
+.bilan-top-cat:last-child { border-bottom: none; }
+
+.bilan-footer { text-align: center; padding: 0.5rem; }
+
+@media (max-width: 900px) {
+  .bilan-stats { grid-template-columns: repeat(3, 1fr); }
+  .bilan-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 500px) {
+  .bilan-stats { grid-template-columns: repeat(2, 1fr); }
+}
