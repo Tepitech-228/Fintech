@@ -4,7 +4,7 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
-    "build": "cd ../Front && npx ng build --configuration production",
+    "build": "cd ../Front && npm install && npx ng build --configuration production",
     "seed": "node src/seed.js",
     "db:init": "node src/db/init.js",
     "db:migrate": "node src/db/migrate.js up",

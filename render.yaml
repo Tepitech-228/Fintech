@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: trackr-api
+    env: node
+    region: frankfurt
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    rootDir: back
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3000"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        fromService:
+          type: web
+          name: trackr-api
+          property: url
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "3306"
+      - key: DB_NAME
+        value: trackr
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
